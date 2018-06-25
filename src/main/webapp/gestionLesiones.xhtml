@@ -1,0 +1,384 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Gestión de Lesiones</title>
+    </h:head>
+    <h:body>
+        <ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" template="./WEB-INF/templates/template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel class="container">
+                    <f:view>
+                        <h:form id="lesion">
+                            <div class="ui-fluid">
+                                <!-- //////////////////// MENSAJES \\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:growl id="growlLesiones" showDetail="true" autoUpdate="true" showSummary="false" />
+
+                                <p:breadCrumb class="breadcrumps">
+                                    <p:menuitem />
+                                    <p:menuitem url="index.xhtml" icon="fa fa-sign-out" title="#{msg.logOut}"/>
+                                    <p:menuitem value="#{msg.menu}" url="menu.xhtml" title="#{msg.menu}" />
+                                    <p:menuitem value="#{msg.lesiones}" url="gestionLesiones.xhtml" disabled="true" title="#{msg.lesiones}" />
+                                </p:breadCrumb>
+
+                                <!-- //////////////////// PANEL DE TÍTULO \\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:outputPanel class="box-title">
+                                    <p:outputLabel class="box-title__title" value="#{msg.gestionLesiones}" />
+                                </p:outputPanel>
+
+                                <!-- //////////////////// PANEL DE AÑADIR OBJETO \\\\\\\\\\\\\\\\\\ -->
+                                <p:outputPanel class="addPanel">
+                                    <p:commandLink class="fa fa-plus-square add-link add-link--first" title="#{msg.nuevaLesion}"
+                                                   actionListener="#{gestionLesionesView.guardarLesionPrev()}" 
+                                                   process="@this" 
+                                                   update=":lesion:panelAddLesion 
+                                                   :lesion:dtTratamientosDisponibles 
+                                                   :lesion:dtComplementosDisponibles
+                                                   :lesion:actionGestion" 
+                                                   oncomplete="PF('dlgAdd').show();">
+                                        <p:resetInput target=":lesion:panelAddLesion" />
+                                    </p:commandLink>
+                                </p:outputPanel>
+
+                                <!-- //////////////////// DIÁLOGO DE AÑADIR OBJETO \\\\\\\\\\\\\\\\\\ -->
+
+                                <p:dialog class="dialog" id="dlgAddLesion" widgetVar="dlgAdd" closable="true" dynamic="true" 
+                                          showEffect="fade" hideEffect="fade" resizable="false" modal="true" responsive="true">
+
+                                    <f:facet name="header">
+                                        <h:outputText id="actionGestion" value="#{gestionLesionesView.nuevaGestion? msg.nuevaLesion:msg.editarLesion}"/>
+                                    </f:facet>
+
+                                    <p:scrollPanel mode="native" style="height:25em;">
+                                        <p:outputPanel id="panelAddLesion" class="dialog__container">
+                                            <p:outputPanel class ="dialog__box">
+
+                                                <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank">
+
+                                                    <p:panelGrid columns="2" columnClasses="ui-grid-col-4,ui-grid-col-8" layout="grid" styleClass="ui-panelgrid-blank">
+                                                        <h:outputLabel for="nombreLesion" value="#{msg.nombreLesion}" />
+                                                        <p:inputText id="nombreLesion" value="#{gestionLesionesView.nombreLesion}" 
+                                                                     required="true" requiredMessage="#{msg.reqNombre}"
+                                                                     maxlength="30" disabled="#{gestionLesionesView.exito == true}" />
+                                                    </p:panelGrid>
+
+                                                    <p:panelGrid columns="2" columnClasses="ui-grid-col-4,ui-grid-col-8" layout="grid" styleClass="ui-panelgrid-blank">
+                                                        <h:outputLabel for="tipoLesion" value="#{msg.traumatica}" />
+                                                        <p:inputSwitch id="tipoLesion" value="#{gestionLesionesView.tipoLesion}" 
+                                                                       required="true" requiredMessage="#{msg.reqTipo}"
+                                                                       onLabel="#{msg.si}" offLabel="#{msg.no}" disabled="#{gestionLesionesView.exito == true}" />
+                                                    </p:panelGrid>
+
+                                                </p:panelGrid>
+
+                                                <p:panelGrid columns="2" columnClasses="ui-grid-col-6 ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank">
+
+                                                    <p:panelGrid columns="1" columnClasses="ui-grid-col-12" layout="grid" styleClass="ui-panelgrid-blank">
+                                                        <h:outputLabel for="descripcionLesion" value="#{msg.descripcionLesion}" />
+                                                        <p:inputTextarea id="descripcionLesion" value="#{gestionLesionesView.descripcionLesion}" 
+                                                                         rows="3" cols="40" counter="dLesion" maxlength="100" 
+                                                                         counterTemplate="{0} #{msg.caracteresDisponibles}" 
+                                                                         disabled="#{gestionLesionesView.exito == true}" />
+                                                        <h:outputText id="dLesion" class="dialog__span" />
+                                                    </p:panelGrid>
+
+                                                    <p:panelGrid columns="1" columnClasses="ui-grid-col-12" layout="grid" styleClass="ui-panelgrid-blank">
+                                                        <h:outputLabel for="causasLesion" value="#{msg.causasLesion}" />
+                                                        <p:inputTextarea id="causasLesion" value="#{gestionLesionesView.causasLesion}" rows="3" cols="40" 
+                                                                         counter="cLesion" maxlength="100" counterTemplate="{0} #{msg.caracteresDisponibles}"
+                                                                         disabled="#{gestionLesionesView.exito == true}"
+                                                                         />
+                                                        <h:outputText id="cLesion" class="dialog__span" />
+                                                    </p:panelGrid>
+
+
+                                                    <p:panelGrid columns="1" columnClasses="ui-grid-col-12" layout="grid" styleClass="ui-panelgrid-blank">
+                                                        <h:outputLabel for="prevencionLesion" value="#{msg.prevencionLesion}" />
+                                                        <p:inputTextarea id="prevencionLesion" value="#{gestionLesionesView.prevencionLesion}" rows="3" cols="40"
+                                                                         counter="pLesion" maxlength="100" counterTemplate="{0} #{msg.caracteresDisponibles}"
+                                                                         disabled="#{gestionLesionesView.exito == true}"
+                                                                         />
+                                                        <h:outputText id="pLesion" class="dialog__span" />
+                                                    </p:panelGrid>
+
+                                                    <p:panelGrid columns="1" columnClasses="ui-grid-col-12" layout="grid" styleClass="ui-panelgrid-blank">
+                                                        <h:outputLabel for="sintomasLesion" value="#{msg.sintomasLesion}" />
+                                                        <p:inputTextarea id="sintomasLesion" value="#{gestionLesionesView.sintomasLesion}" rows="3" cols="40"
+                                                                         counter="sLesion" maxlength="100" counterTemplate="{0} #{msg.caracteresDisponibles}"
+                                                                         disabled="#{gestionLesionesView.exito == true}"
+                                                                         />
+                                                        <h:outputText id="sLesion" class="dialog__span" />
+                                                    </p:panelGrid>
+
+                                                </p:panelGrid>
+
+                                            </p:outputPanel>
+
+                                            <!-- //////////////////// PANEL DE AÑADIR TRATAMIENTO-LESIÓN \\\\\\\\\\\\\\\\\\ -->
+                                            <p:outputPanel class="addPanel">
+                                                <p:commandLink id="addTratamiento" class="fa fa-plus-square add-link" title="#{msg.anadirTratamiento}" 
+                                                               process="@this"
+                                                               oncomplete="PF('dlgAddTratamientoLesion').show();" 
+                                                               disabled="#{gestionLesionesView.exito==true}" />
+                                            </p:outputPanel>
+                                            <!-- //////////////// DATATABLE DE TRATAMIENTOS SELECCIONADOS \\\\\\\\\\\\\\\\\\\\\\ -->
+                                            <p:dataTable id="dtTratamientosSeleccionados" class="datatable" value="#{gestionLesionesView.listaTratamientosSeleccionados}" var="item"
+                                                         paginator="true" rows="5" paginatorPosition="bottom"
+                                                         rowsPerPageTemplate="5,10,15" tableStyle="table-layout: auto;"
+                                                         emptyMessage="#{msg.noTratamientos}" reflow="true">
+                                                <f:facet name="header">
+                                                    #{msg.tratamientosSel}
+                                                </f:facet>
+
+                                                <p:column headerText="#{msg.nombreTratamiento}" class="datatable__col">
+                                                    <h:outputText value="#{item.nombre}" />
+                                                </p:column>
+
+                                                <p:column headerText="#{msg.duracionTratamiento}" class="datatable__col datatable__col--textCenter">
+                                                    <h:outputText value="#{item.duracion}'" />
+                                                </p:column>
+
+                                                <p:column headerText="#{msg.precioTratamiento}" class="datatable__col datatable__col--textCenter">
+                                                    <h:outputText value="#{item.precio}">
+                                                        <!-- <f:convertNumber minFractionDigits="2" currencySymbol="€" type="currency" /> -->
+                                                        <f:convertNumber pattern="##0.00€" />
+                                                    </h:outputText>
+                                                </p:column>
+
+                                                <p:column class="datatable__col datatable__col--textCenter datatable__col--double-min">
+                                                    <p:commandLink class="fa fa-remove action-link" title="#{msg.borrarTratamiento}" 
+                                                                   process="@this" 
+                                                                   actionListener="#{gestionLesionesView.deleteLesionTratamiento(item)}"
+                                                                   update=":lesion:dtTratamientosDisponibles :lesion:dtTratamientosSeleccionados"
+                                                                   disabled="#{gestionLesionesView.exito == true}" />
+                                                </p:column>
+                                            </p:dataTable>
+
+                                            <!-- //////////////////// PANEL DE AÑADIR COMPLEMENTO-LESIÓN \\\\\\\\\\\\\\\\\\ -->
+                                            <p:outputPanel class="addPanel">
+                                                <p:commandLink id="addComplemento" class="fa fa-plus-square add-link" title="#{msg.anadirComplemento}" 
+                                                               process="@this"
+                                                               oncomplete="PF('dlgAddComplementoLesion').show();" 
+                                                               disabled="#{gestionLesionesView.exito == true}" />
+                                            </p:outputPanel>
+
+                                            <!-- //////////////// DATATABLE DE COMPLEMENTOS SELECCIONADOS \\\\\\\\\\\\\\\\\\\\\\ -->
+                                            <p:dataTable id="dtComplementosSeleccionados" class="datatable" value="#{gestionLesionesView.listaComplementosSeleccionados}" var="item"
+                                                         paginator="true" rows="5" paginatorPosition="bottom"
+                                                         rowsPerPageTemplate="5,10,15" tableStyle="table-layout: auto;"
+                                                         emptyMessage="#{msg.noComplementos}" reflow="true">
+                                                <f:facet name="header">
+                                                    #{msg.complementosSel}
+                                                </f:facet>
+
+                                                <p:column headerText="#{msg.nombreComplemento}" class="datatable__col">
+                                                    <h:outputText value="#{item.nombre}" />
+                                                </p:column>
+
+                                                <p:column headerText="#{msg.tipoComplemento}" class="datatable__col">
+                                                    <h:outputText value="#{item.tipo}" />
+                                                </p:column>
+
+                                                <p:column headerText="#{msg.descripcionComplemento}" class="datatable__col">
+                                                    <h:outputText value="#{item.descripcion}" />
+                                                </p:column>
+
+                                                <p:column class="datatable__col datatable__col--textCenter datatable__col--double-min">
+                                                    <p:commandLink class="fa fa-remove action-link" title="#{msg.borrarComplemento}" 
+                                                                   process="@this" actionListener="#{gestionLesionesView.deleteLesionComplemento(item)}"
+                                                                   update=":lesion:dtComplementosDisponibles :lesion:dtComplementosSeleccionados" 
+                                                                   disabled="#{gestionLesionesView.exito == true}" />
+                                                </p:column>
+                                            </p:dataTable>
+
+                                            <!-- ////////////////////// BOTONES DE ENVÍO DE FORMULARIO \\\\\\\\\\\\\\\\\\ -->
+                                            <p:outputPanel class="dialog__btn">
+
+                                                <p:commandButton class="button" value="#{msg.guardar}" 
+                                                                 actionListener="#{gestionLesionesView.guardarLesion()}" 
+                                                                 update="@this :lesion:dtLesiones :lesion:growlLesiones :lesion:panelAddLesion"
+                                                                 process=":lesion:dlgAddLesion" 
+                                                                 rendered="#{gestionLesionesView.nuevaGestion}"
+                                                                 disabled="#{gestionLesionesView.exito == true}"
+                                                                 />
+
+                                                <p:commandButton class="button"
+                                                                 value="#{msg.editar}" 
+                                                                 actionListener="#{gestionLesionesView.modificarLesion()}"
+                                                                 process=":lesion:dlgAddLesion" 
+                                                                 update="@this :lesion:growlLesiones :lesion:dtLesiones :lesion:panelAddLesion"
+                                                                 rendered="#{!gestionLesionesView.nuevaGestion}"
+                                                                 disabled="#{gestionLesionesView.exito == true}"
+                                                                 />
+                                            </p:outputPanel>
+                                        </p:outputPanel>
+                                    </p:scrollPanel>
+                                </p:dialog>
+
+
+                                <!-- //////////////////// DATATABLE PRINCIPAL \\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:dataTable reflow="true" id="dtLesiones" class="datatable" value="#{gestionLesionesView.listarLesiones}" var="item"
+                                             paginator="true" rows="5" paginatorPosition="bottom"
+                                             rowsPerPageTemplate="5,10,15" tableStyle="table-layout:auto;"
+                                             emptyMessage="#{msg.noLesiones}" widgetVar="dtLes" >
+
+                                    <p:column headerText="#{msg.nombreLesion}" class="datatable__col" filterBy="#{item.nombre}" 
+                                              priority="1" filterMatchMode="contains" sortBy="#{item.nombre}">
+                                        <h:outputText value="#{item.nombre}" />
+                                    </p:column>
+                                    <p:column headerText="#{msg.descripcionLesion}" class="datatable__col" filterBy="#{item.descripcion}" 
+                                              priority="3" filterMatchMode="contains">
+                                        <h:outputText value="#{item.descripcion}" />
+                                    </p:column>
+                                    <p:column headerText="#{msg.traumatica}" class="datatable__col datatable__col--textCenter datatable__col--medium" filterBy="#{item.tipo}" 
+                                              priority="4" filterMatchMode="equals">
+                                        <f:facet name="filter">
+                                            <p:selectOneButton onchange="PF('dtLes').filter()">
+                                                <f:converter converterId="javax.faces.Boolean" />
+                                                <f:selectItem itemLabel="Sí" itemValue="true" />
+                                                <f:selectItem itemLabel="|" itemValue="" />
+                                                <f:selectItem itemLabel="No" itemValue="false" />
+                                            </p:selectOneButton>
+                                        </f:facet>
+                                        <h:outputText value="#{item.tipo ? msg.si: msg.no}" />
+                                    </p:column>
+                                    <p:column class="datatable__col datatable__col--textCenter datatable__col--min" priority="2">
+                                        <p:commandLink class="fa fa-eye action-link" title="#{msg.ampliarLesion}" 
+                                                       actionListener="#{gestionLesionesView.ampliarLesion(item)}"
+                                                       oncomplete="PF('dlgEnlarge').show();" 
+                                                       process="@this"
+                                                       update=":lesion:panelAmpliacionLesion :lesion:panelAmpliacionLesionNombre"
+                                                       />
+
+                                        <p:commandLink class="fa fa-edit action-link" title="#{msg.editarLesion}" 
+                                                       actionListener="#{gestionLesionesView.modificarLesionPrev(item)}"
+                                                       oncomplete="PF('dlgAdd').show();" 
+                                                       update=":lesion:panelAddLesion :lesion:dtTratamientosDisponibles 
+                                                       :lesion:dtComplementosDisponibles :lesion:actionGestion" process="@this"
+                                                       >
+                                            <p:resetInput target=":lesion:panelAddLesion" />
+                                        </p:commandLink>
+
+                                        <p:commandLink class="fa fa-trash-o action-link" title="#{msg.eliminarLesion}" 
+                                                       actionListener="#{gestionLesionesView.eliminarLesion(item)}"
+                                                       process="@this"
+                                                       update=":lesion:dtLesiones :lesion:growlLesiones" 
+                                                       >
+                                            <p:confirm header="#{msg.eliminarLesion}" message="¿#{msg.eliminacionLesion} #{item.nombre}?" icon="ui-icon-alert" />
+                                        </p:commandLink>
+                                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" closable="true" responsive="true">
+                                            <p:panelGrid layout="grid" columns="2" styleClass="text-center">
+                                                <p:commandButton value="#{msg.si}" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                                <p:commandButton value="#{msg.no}" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                            </p:panelGrid>
+                                        </p:confirmDialog>
+                                    </p:column>
+                                </p:dataTable>
+                                <!-- //////////////// DIÁLOGO DE TRATAMIENTOS DISPONIBLES \\\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:dialog header="#{msg.tratamientosDisp}" class="dialog" widgetVar="dlgAddTratamientoLesion" 
+                                          resizable="false" modal="true" responsive = "true" showEffect="fade" 
+                                          hideEffect="fade" closable="true" dynamic="true">
+
+                                    <!-- //////////////// DATATABLE DE TRATAMIENTOS DISPONIBLES \\\\\\\\\\\\\\\\\\\\\\ -->
+                                    <p:dataTable id="dtTratamientosDisponibles" class="datatable" 
+                                                 value="#{gestionLesionesView.listaTratamientosDisponibles}" var="tratamiento"
+                                                 paginator="true" rows="5" paginatorPosition="bottom"
+                                                 rowsPerPageTemplate="5,10,15" reflow="true"
+                                                 emptyMessage="#{msg.noTratamientos}" style="max-width: 40em;">
+
+                                        <p:column headerText="#{msg.nombreTratamiento}" class="datatable__col">
+                                            <h:outputText value="#{tratamiento.nombre}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.duracionTratamiento}" class="datatable__col datatable__col--textCenter">
+                                            <h:outputText value="#{tratamiento.duracion}'" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.precioTratamiento}" class="datatable__col datatable__col--textCenter">
+                                            <h:outputText value="#{tratamiento.precio}">
+                                                <!-- <f:convertNumber minFractionDigits="2" currencySymbol="€" type="currency" /> -->
+                                                <f:convertNumber pattern="##0.00€" />
+                                            </h:outputText>
+                                        </p:column>
+
+                                        <p:column class="datatable__col datatable__col--textCenter datatable__col--double-min">
+                                            <p:commandLink class="fa fa-check action-link" title="#{msg.anadirTratamiento}" 
+                                                           process="@this" actionListener="#{gestionLesionesView.addLesionTratamiento(tratamiento)}"
+                                                           update=":lesion:dtTratamientosDisponibles :lesion:dtTratamientosSeleccionados" 
+                                                           disabled="#{gestionLesionesView.exito == true}" />
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:dialog>
+
+                                <!-- //////////////// DIÁLOGO DE COMPLEMENTOS DISPONIBLES \\\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:dialog header="#{msg.complementosDisp}" class="dialog" widgetVar="dlgAddComplementoLesion" 
+                                          resizable="false" modal="true" responsive="true" dynamic="true" closable="true" showEffect="fade"
+                                          hideEffect="fade">
+
+                                    <!-- //////////////// DATATABLE DE COMPLEMENTOS DISPONIBLES \\\\\\\\\\\\\\\\\\\\\\ -->
+                                    <p:dataTable id="dtComplementosDisponibles" class="datatable" value="#{gestionLesionesView.listaComplementosDisponibles}" var="complemento"
+                                                 paginator="true" rows="5" paginatorPosition="bottom"
+                                                 rowsPerPageTemplate="5,10,15" style="max-width: 40em;" reflow="true"
+                                                 emptyMessage="#{msg.noComplementos}" >
+
+                                        <p:column headerText="#{msg.nombreComplemento}" class="datatable__col">
+                                            <h:outputText value="#{complemento.nombre}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.tipoComplemento}" class="datatable__col">
+                                            <h:outputText value="#{complemento.tipo}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.descripcionComplemento}" class="datatable__col">
+                                            <h:outputText value="#{complemento.descripcion}" />
+                                        </p:column>
+                                        <p:column class="datatable__col datatable__col--textCenter datatable__col--double-min">
+                                            <p:commandLink class="fa fa-check action-link" title="#{msg.anadirComplemento}" 
+                                                           process="@this" 
+                                                           actionListener="#{gestionLesionesView.addLesionComplemento(complemento)}"
+                                                           update=":lesion:dtComplementosDisponibles :lesion:dtComplementosSeleccionados"
+                                                           disabled="#{gestionLesionesView.exito == true}" />
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:dialog>
+
+                                <!-- //////////////// DIÁLOGO DE AMPLIACIÓN DE LESIÓN \\\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:dialog class="dialog" widgetVar="dlgEnlarge" resizable="false" modal="true" width="60%" responsive="true">
+
+                                    <f:facet name="header">
+                                        <h:outputText id="panelAmpliacionLesionNombre" value="#{gestionLesionesView.nombreLesion}" />
+                                    </f:facet>
+
+                                    <p:outputPanel id="panelAmpliacionLesion" style="padding:1em 0; width: 100%;">
+
+                                        <p:carousel value="#{gestionLesionesView.mapAmpliacion}" var="item"
+                                                    numVisible="1" responsive="true" >
+
+
+                                            <p:panelGrid columns="2" columnClasses="ui-grid-col-4, ui-grid-col-8" layout="grid" styleClass="ui-panelgrid-blank" style="margin:1em 0;">
+
+                                                <h:outputText value="#{item.key}" />
+                                                <h:outputText value="#{item.value}" />
+
+                                            </p:panelGrid>
+
+
+                                        </p:carousel> 
+
+                                    </p:outputPanel>
+
+                                </p:dialog>
+
+                            </div>
+
+                        </h:form>
+                    </f:view>
+                </p:outputPanel>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

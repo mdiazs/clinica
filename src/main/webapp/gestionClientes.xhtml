@@ -1,0 +1,241 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Gestion de Clientes</title>
+    </h:head>
+    <h:body>
+        <ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" template="./WEB-INF/templates/template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel class="container">
+                    <f:view>
+                        <h:form id="cliente">
+                            <div class="ui-fluid">
+
+                                <!-- //////////////////// MENSAJES \\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:growl id="growlClientes" showDetail="true" autoUpdate="true" showSummary="false" />
+
+                                <p:breadCrumb class="breadcrumps">
+                                    <p:menuitem />
+                                    <p:menuitem url="index.xhtml" icon="fa fa-sign-out" title="#{msg.logOut}"/>
+                                    <p:menuitem value="#{msg.menu}" url="menu.xhtml" title="#{msg.menu}" />
+                                    <p:menuitem value="#{msg.clientes}" url="gestionClientes.xhtml" disabled="true" title="#{msg.clientes}" />
+                                </p:breadCrumb>
+
+                                <p:outputPanel class="box-title">
+                                    <p:outputLabel class="box-title__title" value="#{msg.gestionClientes}" />
+                                </p:outputPanel>
+
+                                <!-- //////////////////// BOTÓN DE AÑADIR OBJETO \\\\\\\\\\\\\\\\\\ -->
+                                <p:outputPanel class="addPanel">
+                                    <p:commandLink class="fa fa-plus-square add-link add-link--first" title="#{msg.nuevoCliente}"
+                                                   actionListener="#{gestionClientesView.guardarClientePrev()}"
+                                                   process="@this" update=":cliente:panelAddCliente :cliente:actionGestion" 
+                                                   oncomplete="PF('dlgAdd').show();"
+                                                   >
+                                        <p:resetInput target=":cliente:panelAddCliente" />
+                                    </p:commandLink>
+                                </p:outputPanel>
+
+                                <!-- //////////////////// DIÁLOGO DE AÑADIR/EDITAR OBJETO \\\\\\\\\\\\\\\\\\ -->
+                                <p:dialog class="dialog" id="dlgAddCliente" widgetVar="dlgAdd" dynamic="true" showEffect="fade" hideEffect="fade"
+                                          resizable="false" modal="true" responsive="true" closable="true">
+
+                                    <f:facet name="header">
+                                        <h:outputText id="actionGestion" value="#{gestionClientesView.nuevaGestion? msg.nuevoCliente:msg.editarCliente}"/>
+                                    </f:facet>
+
+                                    <p:scrollPanel mode="native"  style="height:21.5em;">
+
+                                        <p:outputPanel id="panelAddCliente" class="dialog__container">
+
+                                            <p:outputPanel class="dialog__box">
+
+                                                <p:panelGrid columns="2" columnClasses="ui-grid-col-4,ui-grid-col-8" layout="grid" styleClass="ui-panelgrid-blank">
+
+                                                    <h:outputLabel for="dniCliente" value="#{msg.dniCliente}" />
+                                                    <p:inputText id="dniCliente" value="#{gestionClientesView.dniCliente}" required="true" requiredMessage="#{msg.reqDni}" 
+                                                                 disabled="#{gestionClientesView.nuevaGestion == false or gestionClientesView.exito == true}" 
+                                                                 validatorMessage="#{msg.valDni}" maxlength="9">
+                                                        <f:validateRegex pattern="^[0-9]{8,8}[A-Za-z]$" />
+                                                    </p:inputText>
+
+                                                    <h:outputLabel for="nombreCliente" value="#{msg.nombreCliente}" />
+                                                    <p:inputText id="nombreCliente" value="#{gestionClientesView.nombreCliente}" required="true" requiredMessage="#{msg.reqNombre}"
+                                                                 disabled="#{gestionClientesView.nuevaGestion == false or gestionClientesView.exito == true}" maxlength="20" />
+
+                                                    <h:outputLabel for="apellidosCliente" value="#{msg.apellidosCliente}" />
+                                                    <p:inputText id="apellidosCliente" value="#{gestionClientesView.apellidosCliente}" required="true" requiredMessage="#{msg.reqApellidos}" 
+                                                                 disabled="#{gestionClientesView.nuevaGestion == false or gestionClientesView.exito == true}" maxlength="30" />
+
+                                                    <h:outputLabel for="localidadCliente" value="#{msg.localidadCliente}" />
+                                                    <p:selectOneMenu id="localidadCliente" value="#{gestionClientesView.localidadCliente}" required="true" requiredMessage="#{msg.reqLocalidad}"
+                                                                     effect="fold" editable="true" disabled="#{gestionClientesView.exito == true}" maxlength="30">
+                                                        <f:selectItem itemLabel="Select One" itemValue="" />
+                                                        <f:selectItems value="#{gestionClientesView.listarLocalidades}" var="item" itemLabel="#{item}" itemValue="#{item}" />
+                                                    </p:selectOneMenu>
+
+                                                    <h:outputLabel for="direccionCliente" value="#{msg.direccionCliente}" />
+                                                    <p:inputText id="direccionCliente" value="#{gestionClientesView.direccionCliente}" required="true" requiredMessage="#{msg.reqDireccion}"
+                                                                 disabled="#{gestionClientesView.exito == true}" maxlength="50" /> 
+
+                                                    <h:outputLabel for="telefonoCliente" value="#{msg.telefonoCliente}" />
+                                                    <p:inputText id="telefonoCliente" value="#{gestionClientesView.telefonoCliente}" required="true" requiredMessage="#{msg.reqTelefono}" 
+                                                                 disabled="#{gestionClientesView.exito == true}" maxlength="9" validatorMessage="#{msg.valTelefono}">
+                                                        <f:validateRegex pattern="^(\+34|0034|34)?[6|7|9][0-9]{8}$" />
+                                                    </p:inputText>
+
+                                                </p:panelGrid>
+
+                                            </p:outputPanel>
+
+                                            <p:outputPanel class="dialog__btn">
+
+                                                <p:commandButton class="button"
+                                                                 value="#{msg.guardar}" 
+                                                                 actionListener="#{gestionClientesView.guardarCliente()}" 
+                                                                 update="@this :cliente:dtClientes :cliente:growlClientes :cliente:panelAddCliente"
+                                                                 process=":cliente:dlgAddCliente" 
+                                                                 rendered="#{gestionClientesView.nuevaGestion}" 
+                                                                 disabled="#{gestionClientesView.exito == true}"
+                                                                 />
+
+                                                <p:commandButton class="button"
+                                                                 value="#{msg.editar}" 
+                                                                 actionListener="#{gestionClientesView.modificarCliente()}"
+                                                                 process=":cliente:dlgAddCliente" 
+                                                                 update="@this :cliente:growlClientes :cliente:dtClientes :cliente:panelAddCliente"
+                                                                 rendered="#{!gestionClientesView.nuevaGestion}"
+                                                                 disabled="#{gestionClientesView.exito == true}"
+                                                                 />
+
+                                            </p:outputPanel>
+                                        </p:outputPanel>
+                                    </p:scrollPanel>
+                                </p:dialog>
+
+                                <!-- //////////////////// DATATABLE PRINCIPAL \\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:dataTable id="dtClientes" class="datatable" value="#{gestionClientesView.listarClientes}" 
+                                             var="item" widgetVar="clientesTable"
+                                             paginator="true" rows="5" paginatorPosition="bottom"
+                                             rowsPerPageTemplate="5,10,15" tableStyle="table-layout:auto;"
+                                             emptyMessage="#{msg.noClientes}" reflow="true">
+
+                                    <p:column headerText="#{msg.dniCliente}" class="datatable__col datatable__col--textCenter" filterBy="#{item.dni}" filterMatchMode="contains">
+                                        <h:outputText value="#{item.dni}" />
+                                    </p:column>
+                                    <p:column headerText="#{msg.nombreCliente}" class="datatable__col" filterBy="#{item.nombre}" filterMatchMode="contains" sortBy="#{item.nombre}" priority="1">
+                                        <h:outputText value="#{item.nombre}" />
+                                    </p:column>
+                                    <p:column headerText="#{msg.apellidosCliente}" class="datatable__col" filterBy="#{item.apellidos}" filterMatchMode="contains" sortBy="#{item.apellidos}" priority="2">
+                                        <h:outputText value="#{item.apellidos}" />
+                                    </p:column>
+                                    <p:column headerText="#{msg.localidadCliente}" class="datatable__col" filterBy="#{item.localidad}" filterMatchMode="contains" sortBy="#{item.localidad}" priority="4">
+                                        <h:outputText value="#{item.localidad}" />
+                                    </p:column>
+                                    <p:column headerText="#{msg.direccionCliente}" class="datatable__col" filterBy="#{item.direccion}" filterMatchMode="contains" sortBy="#{item.direccion}" priority="5">
+                                        <h:outputText value="#{item.direccion}" />
+                                    </p:column>
+                                    <p:column headerText="#{msg.telefonoCliente}" class="datatable__col datatable__col--textCenter" filterBy="#{item.telefono}" filterMatchMode="contains" priority="6">
+                                        <h:outputText value="#{item.telefono}" />
+                                    </p:column>
+                                    <p:column class="datatable__col datatable__col--textCenter datatable__col--min" priority="3">
+
+                                        <p:commandLink class="fa fa-history action-link" title="#{msg.historial}" 
+                                                       process="@this"
+                                                       action="#{gestionClientesView.verHistorial(item.idCliente)}"
+                                                       update=":cliente:panelHistorial"
+                                                       oncomplete="PF('dlgHistorial').show();" 
+                                                       />
+
+                                        <p:commandLink class="fa fa-edit action-link" title="#{msg.editarCliente}" 
+                                                       actionListener="#{gestionClientesView.modificarClientePrev(item)}" 
+                                                       oncomplete="PF('dlgAdd').show();" 
+                                                       update=":cliente:panelAddCliente :cliente:actionGestion" 
+                                                       process="@this"
+                                                       >
+                                            <p:resetInput target=":cliente:panelAddCliente" />
+                                        </p:commandLink>
+
+                                        <p:commandLink class="fa fa-trash-o action-link" title="#{msg.eliminarCliente}" 
+                                                       actionListener="#{gestionClientesView.eliminarCliente(item)}"
+                                                       process="@this"
+                                                       update=":cliente:dtClientes :cliente:growlClientes" 
+                                                       >
+                                            <p:confirm header="#{msg.eliminarCliente}" message="¿#{msg.eliminacionCliente} #{item.nombre} #{item.apellidos}?" icon="ui-icon-alert" />
+                                        </p:commandLink>
+                                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" closable="true" responsive="true">
+                                            <p:panelGrid layout="grid" columns="2" styleClass="text-center">
+                                                <p:commandButton value="#{msg.si}" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                                <p:commandButton value="#{msg.no}" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                            </p:panelGrid>
+                                        </p:confirmDialog>
+
+                                    </p:column>
+
+                                </p:dataTable>
+
+                                <!--////////////////////////// DÁLOGO HISTORIAL DEL CLIENTE \\\\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:dialog header="#{msg.citasHistorial}" class="dialog" id="dlgHistorial" widgetVar="dlgHistorial"  closable="true" 
+                                          resizable="false" modal="true" responsive="true" showEffect="fade" hideEffect="fade" style="min-width: 80%;">
+
+                                    <p:scrollPanel mode="native"  style="height:25em;">
+
+
+                                        <p:dataGrid id="panelHistorial" var="clienteHistorial" value="#{gestionClientesView.listaHistorialCli}" columns="3" layout="grid"
+                                                    paginator="true" paginatorPosition="bottom"
+                                                    paginatorTemplate=" {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                    rows="3" emptyMessage="#{msg.noCitas}" style="min-width: 80%;" 
+                                                    >
+
+                                            <f:facet name="header">
+                                                <h:outputText value="#{gestionClientesView.nombreCliente} #{gestionClientesView.apellidosCliente}" />
+                                            </f:facet>
+
+                                            <p:panel>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{clienteHistorial.fecha}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                                                    </h:outputText>
+                                                </f:facet>
+                                                <p:panelGrid columns="1" layout="grid" style="text-align: center; margin-bottom: 0.5em;">
+                                                    <h:outputText class="dialog__text" value="#{clienteHistorial.nombreMusculo}" />
+                                                    <h:graphicImage class="dialog__image--small" name="#{clienteHistorial.urlImagenMusculo}" style="border-radius: 10px;" /> 
+                                                </p:panelGrid>
+                                                <p:panelGrid columns="2" layout="grid"> 
+
+                                                    <p:outputLabel value="#{msg.lesion}:" />
+                                                    <h:outputText value="#{clienteHistorial.nombreLesion}" />
+
+                                                    <p:outputLabel value="#{msg.grado}:" />
+                                                    <h:outputText value="#{clienteHistorial.grado}" />
+
+                                                    <p:outputLabel value="#{msg.estado}:" />
+                                                    <h:outputText value="#{clienteHistorial.estado}" />
+
+                                                    <p:outputLabel value="#{msg.tratamiento}:" />
+                                                    <h:outputText value="#{clienteHistorial.nombreTratamiento}" />
+
+                                                    <f:facet name="footer">
+                                                        #{clienteHistorial.modulo}
+                                                    </f:facet>
+
+                                                </p:panelGrid>
+
+                                            </p:panel>
+
+                                        </p:dataGrid>
+                                    </p:scrollPanel>
+                                </p:dialog>
+                            </div>
+                        </h:form>
+                    </f:view>
+                </p:outputPanel>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

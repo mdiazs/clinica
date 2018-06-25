@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Gestión Complementos</title>
+    </h:head>
+    <h:body>
+        <ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" template="./WEB-INF/templates/template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel class="container">
+                    <f:view>
+                        <h:form id="complemento">
+                            <div class="ui-fluid">
+                                <!-- //////////////////// MENSAJES \\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:growl id="growlComplementos" showDetail="true" autoUpdate="true" showSummary="false" />
+
+                                <p:breadCrumb class="breadcrumps">
+                                    <p:menuitem />
+                                    <p:menuitem url="index.xhtml" icon="fa fa-sign-out" title="#{msg.logOut}"/>
+                                    <p:menuitem value="#{msg.menu}" url="menu.xhtml" title="#{msg.menu}" />
+                                    <p:menuitem value="#{msg.complementos}" url="gestionComplementos.xhtml" disabled="true" title="#{msg.complementos}" />
+                                </p:breadCrumb>
+
+                                <!-- //////////////////// PANEL DE TÍTULO \\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:outputPanel class="box-title">
+                                    <p:outputLabel class="box-title__title" value="#{msg.gestionComplementos}" />
+                                </p:outputPanel>
+
+                                <!-- //////////////////// BOTÓN DE AÑADIR OBJETO \\\\\\\\\\\\\\\\\\ -->
+                                <p:outputPanel class="addPanel">
+                                    <p:commandLink class="fa fa-plus-square add-link add-link--first" title="#{msg.nuevoComplemento}"
+                                                   actionListener="#{gestionComplementosView.guardarComplementoPrev()}" 
+                                                   process="@this" update=":complemento:panelAddComplemento :complemento:actionGestion" 
+                                                   oncomplete="PF('dlgAdd').show();">
+                                        <p:resetInput target=":complemento:panelAddComplemento" />
+                                    </p:commandLink>
+                                </p:outputPanel>
+
+                                <!-- //////////////////// DIÁLOGO DE AÑADIR/EDITAR OBJETO \\\\\\\\\\\\\\\\\\ -->
+
+                                <p:dialog class="dialog" id="dlgAddComplemento" widgetVar="dlgAdd" dynamic="true" closable="true"
+                                          showEffect="fade" hideEffect="fade" resizable="false" modal="true" responsive="true">
+
+                                    <f:facet name="header">
+                                        <h:outputText id="actionGestion" value="#{gestionComplementosView.nuevaGestion? msg.nuevoComplemento:msg.editarComplemento}"/>
+                                    </f:facet>
+
+                                    <p:scrollPanel mode="native" style="height:24em">
+
+                                        <p:outputPanel id="panelAddComplemento" class="dialog__container">
+                                            <p:outputPanel class="dialog__box">
+
+                                                <p:panelGrid columns="2" columnClasses="ui-grid-col-4,ui-grid-col-8" layout="grid" styleClass="ui-panelgrid-blank">
+
+                                                    <h:outputLabel for="nombreComplemento" value="#{msg.nombreComplemento}" />
+                                                    <p:inputText id="nombreComplemento" value="#{gestionComplementosView.nombreComplemento}" required="true" requiredMessage="#{msg.reqNombre}" 
+                                                                 disabled="#{gestionComplementosView.exito == true}" maxlength="30" />
+
+                                                    <h:outputLabel for="tipoComplemento" value="#{msg.tipoComplemento}" />
+                                                    <p:selectOneMenu id="tipoComplemento" value="#{gestionComplementosView.tipoComplemento}" effect="fold" 
+                                                                     editable="true" required="true" requiredMessage="#{msg.reqTipo}" 
+                                                                     disabled="#{gestionComplementosView.exito == true}" maxlength="20">
+                                                        <f:selectItem itemLabel="Select One" itemValue="" />
+                                                        <f:selectItems value="#{gestionComplementosView.listarComplementosTipos}" />
+                                                    </p:selectOneMenu>
+
+                                                </p:panelGrid>
+
+                                                <p:panelGrid columns="1" columnClasses="ui-grid-col-12" layout="grid" styleClass="ui-panelgrid-blank">
+
+                                                    <h:outputLabel for="descripcionComplemento" value="#{msg.descripcionComplemento}" />
+                                                    <p:inputTextarea id="descripcionComplemento" value="#{gestionComplementosView.descripcionComplemento}" rows="5" 
+                                                                     required="true" requiredMessage="#{msg.reqDescripcion}"
+                                                                     counter="dComplemento" maxlength="100" counterTemplate="{0} #{msg.caracteresDisponibles}" 
+                                                                     disabled="#{gestionComplementosView.exito == true}"
+                                                                     /> 
+                                                    <h:outputText id="dComplemento" class="dialog__span" />
+                                                </p:panelGrid>
+
+                                            </p:outputPanel>
+                                            <p:outputPanel class="dialog__btn">
+                                                <p:commandButton class="button"
+                                                                 value="#{msg.guardar}" 
+                                                                 actionListener="#{gestionComplementosView.guardarComplemento()}" 
+                                                                 update="@this :complemento:dtComplementos :complemento:growlComplementos :complemento:panelAddComplemento"
+                                                                 process=":complemento:dlgAddComplemento" 
+                                                                 rendered="#{gestionComplementosView.nuevaGestion}"
+                                                                 disabled="#{gestionComplementosView.exito == true}"
+                                                                 />
+
+                                                <p:commandButton class="button"
+                                                                 value="#{msg.editar}" 
+                                                                 actionListener="#{gestionComplementosView.modificarComplemento()}"
+                                                                 process=":complemento:dlgAddComplemento" 
+                                                                 update="@this :complemento:growlComplementos :complemento:dtComplementos :complemento:panelAddComplemento"
+                                                                 rendered="#{!gestionComplementosView.nuevaGestion}"
+                                                                 disabled="#{gestionComplementosView.exito == true}"
+                                                                 />
+                                            </p:outputPanel>
+                                        </p:outputPanel>
+                                    </p:scrollPanel>
+                                </p:dialog>
+
+                                <!-- //////////////////// DATATABLE PRINCIPAL \\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:dataTable id="dtComplementos" class="datatable" value="#{gestionComplementosView.listarComplementos}" var="item"
+                                             paginator="true" rows="5" paginatorPosition="bottom"
+                                             rowsPerPageTemplate="5,10,15" reflow="true" tableStyle="table-layout: auto;"
+                                             emptyMessage="#{msg.noComplementos}">
+                                    <p:column headerText="#{msg.nombreComplemento}" class="datatable__col" filterBy="#{item.nombre}" 
+                                              filterMatchMode="contains" sortBy="#{item.nombre}" priority="1">
+                                        <h:outputText value="#{item.nombre}" />
+                                    </p:column>
+                                    <p:column headerText="#{msg.tipoComplemento}" class="datatable__col" filterBy="#{item.tipo}" 
+                                              filterMatchMode="contains" sortBy="#{item.tipo}" priority="4">
+                                        <h:outputText value="#{item.tipo}" />
+                                    </p:column>
+                                    <p:column headerText="#{msg.descripcionComplemento}" class="datatable__col" 
+                                              filterBy="#{item.descripcion}" filterMatchMode="contains" priority="2">
+                                        <h:outputText value="#{item.descripcion}" />
+                                    </p:column>
+                                    <p:column class="datatable__col datatable__col--textCenter datatable__col--min" priority="3">
+                                        <p:commandLink class="fa fa-edit action-link" title="#{msg.editarComplemento}" 
+                                                       actionListener="#{gestionComplementosView.modificarComplementoPrev(item)}" 
+                                                       oncomplete="PF('dlgAdd').show();" 
+                                                       update=":complemento:panelAddComplemento :complemento:actionGestion" process="@this"
+                                                       >
+                                            <p:resetInput target=":complemento:panelAddComplemento" />
+                                        </p:commandLink>
+
+                                        <p:commandLink class="fa fa-trash-o action-link" title="#{msg.eliminarComplemento}" 
+                                                       actionListener="#{gestionComplementosView.eliminarComplemento(item)}"
+                                                       process="@this"
+                                                       update=":complemento:dtComplementos :complemento:growlComplementos" 
+                                                       >
+                                            <p:confirm header="#{msg.eliminarComplemento}" message="¿#{msg.eliminacionComplemento}#{item.nombre}?" icon="ui-icon-alert" />
+                                        </p:commandLink>
+                                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" closable="true" responsive="true">
+                                            <p:panelGrid layout="grid" columns="2" styleClass="text-center">
+                                                <p:commandButton value="#{msg.si}" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                                <p:commandButton value="#{msg.no}" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                            </p:panelGrid>
+                                        </p:confirmDialog>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </h:form>
+                    </f:view>
+                </p:outputPanel>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Gestión Complementos</title>
+    </h:head>
+    <h:body>
+        <ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" template="./WEB-INF/templates/template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel class="container">
+                    <f:view>
+                        <h:form id="auditoria">
+                            <div class="ui-fluid">
+
+                                <p:growl id="growlCitas" showDetail="true" showSummary="false" autoUpdate="true"/>
+
+                                <p:breadCrumb class="breadcrumps">
+                                    <p:menuitem />
+                                    <p:menuitem url="index.xhtml" icon="fa fa-sign-out" title="#{msg.logOut}"/>
+                                    <p:menuitem value="#{msg.menu}" url="menu.xhtml" title="#{msg.menu}" />
+                                    <p:menuitem value="Auditorias" url="auditorias.xhtml" disabled="true" title="Auditorías" />
+                                </p:breadCrumb>
+
+                                <!-- //////////////////// PANEL DE TÍTULO \\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:outputPanel class="box-title">
+                                    <p:outputLabel class="box-title__title" value="Auditorías" />
+                                </p:outputPanel>
+
+                                <p:outputPanel id="filtros" class="filtros" style="margin-bottom: 1em; text-align: center;">
+                                    <p:panelGrid class="filtros__grid" columns="4" layout="grid" columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2, ui-grid-col-4">
+
+                                        <h:outputLabel for="fechaInicio" value="#{msg.fechaInicio}" />
+                                        <p:calendar id="fechaInicio" value="#{auditoriasView.fechaInicio}" pattern="dd/MM/yyyy HH:mm:ss" 
+                                                    showOn="button" readonlyInput="true" required="true" requiredMessage="#{msg.reqFechaInicio}"
+                                                    locale="es" maxdate="#{auditoriasView.fechaActual}" >
+                                            <p:ajax event="dateSelect" update=":auditoria:fechaFin" />
+                                        </p:calendar>
+
+                                        <h:outputLabel for="fechaFin" value="#{msg.fechaFin}" />
+                                        <p:calendar id="fechaFin" value="#{auditoriasView.fechaFin}" pattern="dd/MM/yyyy HH:mm:ss" 
+                                                    showOn="button" readonlyInput="true" required="true" requiredMessage="#{msg.reqFechaFin}"
+                                                    mindate="#{auditoriasView.fechaInicio}" locale="es"
+                                                    maxdate="#{auditoriasView.fechaActual}">
+                                        </p:calendar>
+
+                                    </p:panelGrid>
+                                    <p:commandButton style="width: auto;" process=":auditoria:filtros" 
+                                                     actionListener="#{auditoriasView.mostrarAuditorias()}" 
+                                                     value="#{msg.buscar}" update=":auditoria:dtAuditorias :auditoria:filtros" />
+                                </p:outputPanel>
+
+                                <!-- //////////////////// DATATABLE PRINCIPAL \\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:dataTable id="dtAuditorias" class="datatable" value="#{auditoriasView.listarAuditorias}" var="auditoria"
+                                             paginator="true" rows="5" paginatorPosition="bottom"
+                                             rowsPerPageTemplate="5,10,15" reflow="true" tableStyle="table-layout: auto;"
+                                             emptyMessage="No se encontraron auditorias">
+                                    <p:column headerText="#{msg.empleado}" class="datatable__col" priority="3">
+                                        <h:outputText value="#{auditoria.userEmpleado}" />
+                                    </p:column>
+                                    <p:column headerText="#{msg.accion}" class="datatable__col" filterBy="#{auditoria.accion}" 
+                                              filterMatchMode="contains" sortBy="#{auditoria.accion}" priority="4">
+                                        <h:outputText value="#{auditoria.accion}" />
+                                    </p:column>
+                                    <p:column headerText="#{msg.descripcionAccion}" class="datatable__col" filterBy="#{auditoria.descripcion}" 
+                                              filterMatchMode="contains" priority="1">
+                                        <h:outputText value="#{auditoria.descripcion}" />
+                                    </p:column>
+                                    <p:column headerText="#{msg.fechaAccion}" class="datatable__col" priority="2"> 
+                                        <h:outputText value="#{auditoria.fecha}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" locale="es" />
+                                        </h:outputText>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </h:form>
+                    </f:view>
+                </p:outputPanel>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

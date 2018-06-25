@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Inicio</title>
+    </h:head>
+    <h:body>
+        <ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" template="./WEB-INF/templates/template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel class="container container--mid">
+                    <f:view>
+                        <h:form id="sesion">
+
+                            <div class="ui-fluid">
+                                <!-- /////////////// PANEL DE LOGIN \\\\\\\\\\\\\\\\\\ -->
+                                <p:outputPanel class="login">
+
+
+
+                                    <!-- //////////////////// MENSAJES \\\\\\\\\\\\\\\\\\\\\ -->
+                                    <p:growl id="growlSesion" showDetail="true" autoUpdate="true" showSummary="false" />
+
+                                    <div class = "login__box">
+                                        
+                                        <div class="login__top">
+                                            <h:outputText class="login__title" value="#{msg.clinica}" />
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <ul class="login__list">
+
+                                                <li class="login__item">
+                                                    <h:outputLabel class="login__label" for="empleado" value="#{msg.usuario}" />
+                                                    <p:inputText class="login__input" id="empleado" value="#{gestionSesionView.empleado.user}"
+                                                                 required="true" requiredMessage="#{msg.reqUsuario}" 
+                                                                 placeholder="#{msg.usuario}" />
+                                                </li>
+
+                                                <li class="login__item" style="padding:0.5em;">
+                                                    <h:outputLabel class="login__label" for="clave" value="#{msg.password}" />
+                                                    <p:password class="login__input" id="clave" value="#{gestionSesionView.empleado.pass}" required="true" requiredMessage="#{msg.reqPassword}"
+                                                                placeholder="#{msg.password}" />
+                                                </li>
+
+                                            </ul>
+
+                                        </div>
+                                        <div class="login__bottom">
+                                        <h:commandButton value="#{msg.login}" action="#{gestionSesionView.iniciarSesion()}"
+                                                         class="btn btn-lg login__button" />
+                                        </div>
+
+                                    </div>
+
+                                </p:outputPanel>
+                            </div>
+                        </h:form>
+                    </f:view>
+                </p:outputPanel>
+
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

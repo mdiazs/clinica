@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Menu</title>
+    </h:head>
+    <h:body>
+        <ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" template="./WEB-INF/templates/template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel class="container"> 
+                    <f:view>
+                        <h:form>
+
+                            <p:breadCrumb class="breadcrumps">
+                                <p:menuitem />
+                                <p:menuitem url="index.xhtml" icon="fa fa-sign-out" title="#{msg.logOut}"/>
+                                <p:menuitem value="#{msg.menu}" url="menu.xhtml" title="#{msg.menu}" disabled="true" />
+                            </p:breadCrumb>
+
+                            <!-- /////////////////// PANEL DE NAVEGACIÓN \\\\\\\\\\\\\\\\\\\\\ -->
+                            <p:outputPanel class="nav">
+                                <p:outputPanel class="nav__item">
+                                    <p:commandLink class="nav__link" action="gestionClientes.xhtml?faces-redirect=true">
+                                        <h:graphicImage class="nav__image" name="images/clientes4.png" title="#{msg.clientes}" 
+                                                        onmouseover="this.src = 'resources/images/clientes1.png'" 
+                                                        onmouseout="this.src = 'resources/images/clientes4.png'"
+                                                        onmousedown="this.src = 'resources/images/clientes4.png'" 
+                                                        onmouseup="this.src = 'resources/images/clientes1.png'"/>
+                                    </p:commandLink>
+                                    <h:outputText class="nav__label" value="#{msg.clientes}" />
+                                </p:outputPanel>
+                                <p:outputPanel class="nav__item">
+                                    <p:commandLink class="nav__link" action="gestionCitas.xhtml?faces-redirect=true">
+                                        <h:graphicImage class="nav__image" name="images/citas4.png" title="#{msg.citas}" 
+                                                        onmouseover="this.src = 'resources/images/citas1.png'" 
+                                                        onmouseout="this.src = 'resources/images/citas4.png'"
+                                                        onmousedown="this.src = 'resources/images/citas4.png'" 
+                                                        onmouseup="this.src = 'resources/images/citas1.png'"/> 
+                                    </p:commandLink>
+                                    <h:outputText class="nav__label" value="#{msg.citas}" />
+                                </p:outputPanel>
+                                <p:outputPanel class="nav__item">
+                                    <p:commandLink class="nav__link" action="gestionLesiones.xhtml?faces-redirect=true">
+                                        <h:graphicImage class="nav__image" name="images/lesiones4.png" title="#{msg.lesiones}" 
+                                                        onmouseover="this.src = 'resources/images/lesiones1.png'" 
+                                                        onmouseout="this.src = 'resources/images/lesiones4.png'"
+                                                        onmousedown="this.src = 'resources/images/lesiones4.png'" 
+                                                        onmouseup="this.src = 'resources/images/lesiones1.png'" /> 
+                                    </p:commandLink>
+                                    <h:outputText class="nav__label" value="#{msg.lesiones}" />
+                                </p:outputPanel>
+                                <p:outputPanel class="nav__item">
+                                    <p:commandLink class="nav__link" action="gestionTratamientos.xhtml?faces-redirect=true">
+                                        <h:graphicImage class="nav__image" name="images/tratamientos4.png" title="#{msg.tratamientos}" 
+                                                        onmouseover="this.src = 'resources/images/tratamientos1.png'" 
+                                                        onmouseout="this.src = 'resources/images/tratamientos4.png'"
+                                                        onmousedown="this.src = 'resources/images/tratamientos4.png'" 
+                                                        onmouseup="this.src = 'resources/images/tratamientos1.png'" /> 
+                                    </p:commandLink>
+                                    <h:outputText class="nav__label" value="#{msg.tratamientos}" />
+                                </p:outputPanel>
+                                <p:outputPanel class="nav__item">
+                                    <p:commandLink class="nav__link" action="gestionComplementos.xhtml?faces-redirect=true">
+                                        <h:graphicImage class="nav__image" name="images/complementos4.png" title="#{msg.complementos}"
+                                                        onmouseover="this.src = 'resources/images/complementos1.png'" 
+                                                        onmouseout="this.src = 'resources/images/complementos4.png'"
+                                                        onmousedown="this.src = 'resources/images/complementos4.png'" 
+                                                        onmouseup="this.src = 'resources/images/complementos1.png'"/>
+                                    </p:commandLink>
+                                    <h:outputText class="nav__label" value="#{msg.complementos}" />
+                                </p:outputPanel>
+                                <p:outputPanel class="nav__item">
+                                    <p:commandLink class="nav__link" action="auditorias.xhtml?faces-redirect=true">
+                                        <h:graphicImage class="nav__image" name="images/auditorias4.png" title="#{msg.auditorias}"
+                                                        onmouseover="this.src = 'resources/images/auditorias1.png'" 
+                                                        onmouseout="this.src = 'resources/images/auditorias4.png'"
+                                                        onmousedown="this.src = 'resources/images/auditorias4.png'" 
+                                                        onmouseup="this.src = 'resources/images/auditorias1.png'"/>
+                                    </p:commandLink>
+                                    <h:outputText class="nav__label" value="#{msg.auditorias}" />
+                                </p:outputPanel>
+                            </p:outputPanel>
+                        </h:form>
+                    </f:view>
+                </p:outputPanel>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

@@ -1,0 +1,356 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 04-mar-2018, 18:01:52
+    Author     : mads
+*/
+
+@font-face {
+    font-family: roboto;
+    src: url('fonts/Roboto-Regular.ttf');
+}
+
+#wrapper{
+    min-height: 100vh;
+    background: #27b67a;
+}
+
+/*#top{
+    align-self: flex-start;
+    width: 100%;
+    padding: 2em;
+}*/
+
+#content{
+    width: 100%;
+    padding: 2em 0;
+    align-self: center;
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 100vh;
+}
+
+/*#bottom{
+    align-self: flex-end;
+    padding: 2em;
+    width: 100%;
+}*/
+
+.container{
+    width: 80%;
+    margin: 0 auto;
+}
+
+.container--mid{
+    align-self: center;
+}
+
+/* Login */
+
+.login{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.login__box{
+    padding: 2em 4em;
+    background-color: #3B4C54;
+    border-radius: 10px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.8) !important; 
+}
+
+.login__top{
+    text-align: center; 
+    color: #27B67A;
+}
+
+.login__title{
+    font-size: 2em; 
+    line-height: 2em;
+    font-family: roboto;
+    font-weight: 500;
+    text-shadow: 1px 1px #47D69A;
+}
+
+.login__list{
+
+}
+
+.login__item{
+    padding:0.5em;
+}
+
+.login__input{
+    padding: 0.5em 1em !important;
+}
+
+.login__label{
+    display: none;
+}
+
+.login__input:focus{
+    box-shadow: 0 0 5px #27B67A, inset 0 2px 10px #3B4C54;
+}
+
+.login__bottom{
+    text-align: center;
+}
+
+.login__button{
+    background-color: #27B67A;
+    color: #3B4C54;
+}
+
+.login__button:hover{
+    background-color: #47D69A;
+}
+
+
+
+/* Nav */
+
+.nav{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.nav__item{
+    width: 8em;
+    height: 8em;
+    margin: 2em 1em;
+    text-align: center;
+}
+
+.nav__item:hover{
+    border-radius: 10px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.8) !important;
+}
+
+.nav__image{
+    width: 100%;
+    height: 100%;
+    border: 3px solid white;
+    border-radius: 10px;
+    margin-bottom: 1em;
+}
+
+.nav__label{
+    font-family: roboto;
+    font-weight: 400;
+    font-size: 1em;
+    color; #000000;
+}
+
+/*Titulos*/
+
+.box-title{
+    margin-bottom: 1em;
+}
+
+.box-title .box-title__title{
+    font-family: roboto;
+    font-size: 2em;
+    font-weight: 400;
+    color: #000000;
+}
+
+/*Panel de añadir*/
+
+.addPanel{
+    text-align: right;
+    margin-bottom: 1em;
+}
+
+/*Datatable*/
+
+.datatable th {
+    font-family: roboto !important;
+    font-size: 1em !important;
+    font-weight: 500 !important;
+    color: #000000 !important;
+    margin-bottom: 1em;
+}
+
+.datatable{
+    margin-bottom: 1em;
+}
+
+.datatable td {
+    font-family: roboto !important;
+    font-size: 0.9em !important;
+    font-weight: 300 !important;
+}
+
+.datatable .datatable__col{
+    vertical-align: middle;
+}
+
+.datatable .datatable__col--textCenter{
+    text-align: center;
+}
+
+.datatable .datatable__col--min{
+    width: 6em;
+}
+
+.datatable .datatable__col--double-min{
+    width: 3em;
+}
+
+.datatable .datatable__col--medium{
+    width: 12em;
+}
+
+/*Dialog*/
+
+.dialog .dialog__container{
+    padding: 1em;
+}
+
+.dialog .dialog__box {
+    margin-bottom: 1em;
+}
+
+.dialog .dialog__btn{
+    text-align: center;
+}
+
+.dialog .dialog__span{
+    font-family: roboto;
+    font-size: 0.6em;
+    font-weight: 200;
+    color: #27b67a;
+    display: block;
+    text-align: right;
+}
+
+.dialog .dialog__image{
+    width: 8em;
+    height: 8em;
+}
+
+.dialog .dialog__image--small{
+    width: 6em;
+    height: 6em;
+}
+
+/*.dialog .dialog__text{
+    overflow: hidden;
+    text-overflow: ellipsis;
+        word-wrap: break-word;
+    white-space: nowrap;
+}*/
+
+
+.action-link{
+    padding: 0.2em 0.1em;
+    text-decoration: none;
+}
+
+.action-link:hover{
+    color: #27b67a;
+}
+
+.action-link:hover{
+    text-decoration: none;
+}
+
+.add-link:hover{
+    color: #27b67a;
+}
+
+.add-link--first{
+    color: #444444;
+}
+
+.add-link--first:hover{
+    color: #D8D8D8;
+    text-decoration: none;
+}
+
+.text-center{
+    text-align: center;
+}
+
+.text-right{
+    text-align: right;
+}
+
+.text-left{
+    text-align: left;
+}
+
+.panelHoras__link{
+    display: inline-block;
+    padding: 1em;
+    border: 1px solid gray;
+}
+
+.panelHoras__link:hover{
+    -webkit-box-shadow: 10px 8px 14px -6px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 8px 14px -6px rgba(0,0,0,0.75);
+    box-shadow: 10px 8px 14px -6px rgba(0,0,0,0.75);
+}
+
+.panelHoras__link:hover span{
+    color: #000000 !important;
+}
+
+.calendar{
+    width: 60%;
+}
+
+.button{
+    width: auto !important;
+    padding: 0 2em !important; 
+}
+
+/* BreadCrumps */
+
+.breadcrumps{
+    margin-bottom: 2em !important;
+}
+
+.breadcrumps a:hover{
+    color: #27b67a;
+}
+
+/* Auditorias */
+
+.filtros{
+    margin-bottom: 2em !important;
+}
+
+.filtros .ui-panelgrid-content{
+    background-color: transparent !important;
+}
+
+.filtros .filtros__grid{
+    max-width: 70% !important; 
+    margin: 0 auto !important;
+    margin-bottom: 1em !important;
+}
+
+.filtros .filtros__grid td{
+    vertical-align: middle;
+}
+
+.filtros .ui-button{
+    height: 2em;
+}
+
+.filtros label{
+    color: #000000;
+}
+
+label{
+    padding-top: 0.3em;
+    margin-bottom: 0;
+}

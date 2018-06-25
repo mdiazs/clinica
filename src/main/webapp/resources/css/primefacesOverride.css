@@ -1,0 +1,118 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 04-mar-2018, 17:56:40
+    Author     : mads
+*/
+
+.ui-panelgrid-cell{
+    border: none !important;
+}
+
+/*.dialog__panelGrid .ui-panelgrid-cell{
+    word-break: break-all !important;
+}*/
+
+.ui-widget-content{
+    border: none !important;
+}
+
+.login .ui-panelgrid td {
+    background-color: #27b67a !important;
+}
+
+.ui-inputswitch{
+    height:30px !important;
+}
+.ui-inputswitch-on, .ui-inputswitch-off, .ui-inputswitch-handle {
+    height: 100% !important;
+}
+
+.ui-inputgroup{
+    padding-bottom: 0.1em;
+}
+
+.ui-inputgroup-addon{
+    width: 2em;
+}
+
+.ui-datagrid-column .ui-commandlink {
+    opacity: 0.95 !important;
+    filter: Alpha(Opacity=95) !important;
+    cursor: grab !important;
+}
+
+.ui-column-customfilter .ui-button{
+    max-width: 3em;
+}
+
+/*.ui-panelgrid-cell{
+    overflow: hidden;
+    text-overflow: ellipsis;
+        word-wrap: break-word;
+    white-space: nowrap;
+}*/
+
+/*.ui-breadcrumb .ui-icon-home {
+    display: none !important;
+}
+
+.ui-breadcrumb .ui-icon-home .ui-icon-triangle-1-e {
+    display: none !important;
+}*/
+
+.ui-breadcrumb{
+    padding-left: 1em !important;
+}
+
+.ui-breadcrumb ul li:nth-child(-n+2){
+    display: none !important;
+}
+
+.ui-breadcrumb a:hover{
+    text-decoration: none;
+}
+
+.ui-datepicker {
+    padding:1em !important;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.8) !important;
+}
+
+.ui-datepicker .ui-state-active {
+    background: #27b67a !important;
+}
+
+.ui-datepicker .ui-state-default {
+    color: #27b67a !important;
+}
+
+.ui-datepicker .ui-state-hover {
+    color: #333333 !important;
+}
+
+/* Cambiar tamaño del texto de los calendar */
+.ui_tpicker_time_label, .ui_tpicker_hour_label, 
+.ui_tpicker_minute_label, .ui_tpicker_second_label {
+    font-size: 0.8em !important;
+}
+
+
+/* Datatable */
+.datatable .ui-inputfield{
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 3px solid #27b67a !important;
+    box-shadow: none !important;
+}
+
+.ui-panelgrid .ui-grid-responsive .ui-grid-row{
+    border: none !important;
+}
+
+
+
+
+

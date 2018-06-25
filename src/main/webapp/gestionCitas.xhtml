@@ -1,0 +1,580 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Gestion de Citas</title>
+
+    </h:head>
+    <h:body>
+        <ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" template="./WEB-INF/templates/template.xhtml">
+            <ui:define name="content">
+                <p:outputPanel class="container">
+                    <f:view>
+                        <h:form id="cita">
+                            <div class="ui-fluid">
+                                <!-- //////////////////// MENSAJES \\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:growl id="growlCitas" showDetail="true" autoUpdate="true" showSummary="false" />
+
+                                <p:breadCrumb class="breadcrumps">
+                                    <p:menuitem />
+                                    <p:menuitem url="index.xhtml" icon="fa fa-sign-out" title="#{msg.logOut}"/>
+                                    <p:menuitem value="#{msg.menu}" url="menu.xhtml" title="#{msg.menu}" />
+                                    <p:menuitem value="#{msg.citas}" url="gestionCitas.xhtml" disabled="true" title="#{msg.citas}" />
+                                </p:breadCrumb>
+
+                                <!-- //////////////////// PANEL DE TÍTULO \\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:outputPanel class="box-title">
+                                    <p:outputLabel class="box-title__title" value="#{msg.gestionCitas}" />
+                                </p:outputPanel>
+
+                                <!-- //////////////////// BOTÓN DE AÑADIR OBJETO \\\\\\\\\\\\\\\\\\ -->
+                                <p:outputPanel class="addPanel">
+                                    <p:commandLink class="fa fa-plus-square add-link add-link--first" title="#{msg.nuevaCita}"
+                                                   update=":cita:panelAddCita :cita:actionGestion"
+                                                   process="@this"
+                                                   actionListener="#{gestionCitasView.guardarCitaPrev()}"
+                                                   oncomplete="PF('dlgAdd').show();">
+                                        <p:resetInput target=":cita:panelAddCita" />
+                                    </p:commandLink>
+                                </p:outputPanel>
+
+                                <!-- ///////////////// BOTÓN DE CONTROLAR CITAS \\\\\\\\\\\\\ -->
+
+                                <p:panelGrid style="text-align: center;" columns="1" columnClasses="ui-grid-col-12" layout="grid" styleClass="ui-panelgrid-blank">
+                                    <p:inputSwitch id="todasCitas" value="#{gestionCitasView.verTodas}" required="true" onLabel="#{msg.pendientes}" offLabel="#{msg.diarias}">
+                                        <p:ajax listener="#{gestionCitasView.controlarCitas}" update=":cita:dtCitas" resetValues="true" />
+                                    </p:inputSwitch>
+                                </p:panelGrid>
+
+
+                                <!-- //////////////////// DIÁLOGO DE AÑADIR/EDITAR OBJETO \\\\\\\\\\\\\\\\\\ -->
+
+                                <p:dialog class="dialog" id="dlgAddCita" widgetVar="dlgAdd" dynamic="true" closable="true" 
+                                          resizable="false" modal="true" responsive="true" showEffect="fade" hideEffect="fade"
+                                          >
+
+                                    <f:facet name="header">
+                                        <h:outputText id="actionGestion" value="#{gestionCitasView.nuevaGestion? msg.nuevaCita:msg.editarCita}"/>
+                                    </f:facet>
+
+                                    <p:scrollPanel mode="native" style="height:27em;">
+                                        <p:outputPanel id = "panelAddCita" class="dialog__container">
+
+                                            <p:outputPanel class="dialog__box">
+
+                                                <p:panelGrid columns="1" columnClasses="ui-grid-col-12" layout="grid" styleClass="ui-panelgrid-blank">
+
+                                                    <p:outputPanel id="clienteDatos">
+                                                        <p:repeat value="#{gestionCitasView.listaPrueba}" var="cliente">
+                                                            <h:outputText value="#{cliente.nombre} " />
+                                                            <h:outputText value="#{cliente.apellidos}" />
+                                                        </p:repeat>
+                                                    </p:outputPanel>
+
+                                                </p:panelGrid>
+
+                                            </p:outputPanel>
+
+                                            <p:outputPanel class="dialog__box">
+
+                                                <p:panelGrid columns="2" columnClasses="ui-grid-col-5,ui-grid-col-7" layout="grid" styleClass="ui-panelgrid-blank">
+
+                                                    <h:outputLabel for="dniCliente" value="#{msg.dniClienteAmp}" />
+                                                    <p:autoComplete id="dniCliente" value="#{gestionCitasView.dniClienteCita}" maxResults="5" 
+                                                                    forceSelection="true" completeMethod="#{gestionClientesView.cargarClientesCita}" 
+                                                                    required="true" requiredMessage="#{msg.reqDni}"
+                                                                    disabled="#{gestionCitasView.exito == true}">
+                                                        <p:ajax event="itemSelect" 
+                                                                listener="#{gestionCitasView.obtenerCliente(gestionCitasView.dniClienteCita)}" 
+                                                                update=":cita:clienteDatos"/>
+                                                    </p:autoComplete>
+
+                                                    <h:outputLabel for="lesionCita" value="#{msg.lesion}" />
+                                                    <p:selectOneMenu id="lesionCita" value="#{gestionCitasView.idLesionCita}" style="min-width: 10.8em;" 
+                                                                     disabled="#{gestionCitasView.exito == true}" required="true" requiredMessage="#{msg.reqLesion}">
+                                                        <f:selectItem itemLabel="Select One" itemValue="#{null}" />
+                                                        <f:selectItems value="#{gestionCitasView.listaNombresLesiones}" var="item" itemLabel="#{item.nombre}" itemValue="#{item.idLesion}" />
+                                                        <p:ajax event="change" listener="#{gestionCitasView.cargarTratamientosLesion(gestionCitasView.idLesionCita)}" 
+                                                                update=":cita:tratamientosLesion :cita:duracionTratamientoLesion :cita:precioTratamientoLesion" />
+                                                    </p:selectOneMenu>
+
+                                                    <h:outputLabel for="tratamientosLesion" value="#{msg.tratamiento}" />
+                                                    <p:selectOneMenu id="tratamientosLesion" value="#{gestionCitasView.idTratamientoLesion}" style="min-width: 10.8em;"
+                                                                     disabled="#{gestionCitasView.idLesionCita eq '' or gestionCitasView.listaTratamientosLesion.size() == 0 or gestionCitasView.exito == true}"
+                                                                     required="true" requiredMessage="#{msg.reqTratamiento}" >
+                                                        <f:selectItem itemLabel="Select One" itemValue="#{null}" />
+                                                        <f:selectItems value="#{gestionCitasView.listaTratamientosLesion}" var="item" itemLabel="#{item.nombre}" itemValue="#{item.idTratamiento}" />
+                                                        <p:ajax event="change" listener="#{gestionCitasView.cargarCarateristicasTratamientoLesion(gestionCitasView.idTratamientoLesion)}" 
+                                                                update=":cita:duracionTratamientoLesion :cita:precioTratamientoLesion :cita:btnHora" />
+                                                    </p:selectOneMenu>
+
+                                                    <h:outputLabel for="duracionTratamientoLesion" value="#{msg.duracionTratamiento}" />
+                                                    <p:inputText id="duracionTratamientoLesion" value="#{gestionCitasView.duracionTratamientoLesion}'" disabled="true" />
+
+                                                    <h:outputLabel for="precioTratamientoLesion" value="#{msg.precioTratamiento}" />
+                                                    <p:inputText id="precioTratamientoLesion" value="#{gestionCitasView.precioTratamientoLesion}€" disabled="true" />
+
+                                                    <h:outputLabel for="fechaCita" value="#{msg.fechaCita}" />
+                                                    <p:calendar id="fechaCita" value="#{gestionCitasView.fechaCita}" disabled="#{gestionCitasView.exito == true}" readonlyInput="true" 
+                                                                mindate="#{gestionCitasView.fechaActual}" required="true" requiredMessage="#{msg.reqFecha}"
+                                                                disabledWeekends="false" pattern="dd/MM/yyyy" locale="es">
+                                                        <p:ajax event="dateSelect" listener="#{gestionCitasView.cargarCitasFecha(gestionCitasView.fechaCita)}" 
+                                                                update=":cita:btnHora :cita:horaCitaNueva" />
+                                                    </p:calendar>
+
+                                                </p:panelGrid>
+
+
+                                                <p:panelGrid columns="3" columnClasses="ui-grid-col-5, ui-grid-col-5, ui-grid-col-2" layout="grid" styleClass="ui-panelgrid-blank">
+                                                    <h:outputLabel for="horaCitaNueva" value="#{msg.horaCita}" />
+
+                                                    <p:inputText id="horaCitaNueva" value="#{gestionCitasView.horaCita}"
+                                                                 readonly="true" disabled="#{gestionCitasView.exito == true}"  />
+
+                                                    <p:commandButton id="btnHora" actionListener="#{gestionCitasView.cargarFechaModulos(gestionCitasView.fechaCita)}" icon="ui-icon-disk" title="Ver Horas" 
+                                                                     disabled="#{gestionCitasView.idTratamientoLesion eq '' or gestionCitasView.fechaCita == null or gestionCitasView.exito == true}" 
+                                                                     update=":cita:panelHoras :cita:horaCitaNueva" process="@this :cita:horaCitaNueva" />
+
+                                                </p:panelGrid>
+
+                                            </p:outputPanel>
+
+                                            <p:outputPanel class="dialog__btn">
+
+                                                <p:commandButton class="button"
+                                                                 value="#{msg.guardar}" 
+                                                                 actionListener="#{gestionCitasView.guardarCita(gestionCitasView.idClienteCita)}" 
+                                                                 update="@this :cita:dtCitas :cita:growlCitas :cita:dniCliente :cita:lesionCita :cita:tratamientosLesion
+                                                                 :cita:fechaCita :cita:horaCitaNueva :cita:btnHora :cita:todasCitas" 
+                                                                 process="@this :cita:dlgAddCita"
+                                                                 rendered="#{gestionCitasView.nuevaGestion}"
+                                                                 disabled="#{gestionCitasView.exito == true}"
+                                                                 />
+
+                                                <p:commandButton class="button"
+                                                                 value="#{msg.editar}" 
+                                                                 process="@this :cita:dlgAddCita" 
+                                                                 actionListener="#{gestionCitasView.modificarCita()}"
+                                                                 update="@this :cita:growlCitas :cita:dtCitas :cita:dniCliente :cita:lesionCita :cita:tratamientosLesion
+                                                                 :cita:fechaCita :cita:horaCitaNueva :cita:btnHora :cita:todasCitas"
+                                                                 rendered="#{!gestionCitasView.nuevaGestion}"
+                                                                 disabled="#{gestionCitasView.exito == true}"
+                                                                 />
+
+                                            </p:outputPanel>
+                                        </p:outputPanel>
+                                    </p:scrollPanel>
+                                </p:dialog>
+
+                                <p:outputPanel id="dtCitasPanel">
+                                    <!-- //////////////////// DATATABLE PRINCIPAL \\\\\\\\\\\\\\\\\\\\\ -->
+                                    <p:dataTable id="dtCitas" class="datatable" value="#{gestionCitasView.listarCitas}" var="item"
+                                                 paginator="true" rows="5" paginatorPosition="bottom"
+                                                 rowsPerPageTemplate="5,10,15" tableStyle="table-layout:auto;"
+                                                 emptyMessage="#{msg.noCitas}" reflow="true" widgetVar="dtCitas">
+
+                                        <p:column headerText="#{msg.idCita}" class="datatable__col" filterBy="#{item.idCita}" filterMatchMode="contains" priority="5" sortBy="#{item.idCita}">
+                                            <h:outputText value="#{item.idCita}" />
+                                        </p:column>
+                                        <p:column headerText="#{msg.nombreCliente}" class="datatable__col" filterBy="#{item.nombreCliente}" filterMatchMode="contains" priority="1">
+                                            <h:outputText value="#{item.nombreCliente}" />
+                                        </p:column>
+                                        <p:column headerText="#{msg.apellidosCliente}" class="datatable__col" filterBy="#{item.apellidos}" filterMatchMode="contains" priority="4">
+                                            <h:outputText value="#{item.apellidos}" />
+                                        </p:column>
+                                        <p:column headerText="#{msg.fechaCita}" class="datatable__col datatable__col--textCenter" filterBy="#{item.fecha}" 
+                                                  sortBy="#{item.fecha}" sortFunction="#{gestionCitasView.compararFechas}" filterFunction="#{gestionCitasView.filtrarFechas}" priority="2">
+                                            <f:facet name="filter">
+
+                                                <p:calendar id="calendarFilter" pattern="dd/MM/yyyy" disabledWeekends="false" locale="es" 
+                                                            readonlyInput="true" mindate="#{gestionCitasView.fechaTomorrow}" disabled="#{!gestionCitasView.verTodas}">
+                                                    <p:ajax event="dateSelect" oncomplete="PF('dtCitas').filter()" update=":cita:dtCitas" />
+                                                </p:calendar>
+
+                                            </f:facet>
+                                            <h:outputText value="#{item.fecha}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="#{msg.horaCita}" class="datatable__col datatable__col--textCenter" 
+                                                  filterBy="#{item.modulo}" filterMatchMode="contains" sortBy="#{item.modulo}" priority="3">
+                                            <h:outputText value="#{item.modulo}" />
+                                        </p:column>
+                                        <p:column class="datatable__col datatable__col--textCenter datatable__col--min">
+
+                                            <p:commandLink class="fa fa-bell-o action-link" title="#{msg.atenderCita}"  
+                                                           process="@this"
+                                                           actionListener="#{gestionCitasView.atenderCitaPrev(item)}"
+                                                           oncomplete="PF('dlgAtender').show();"
+                                                           update=":cita:panelAtenderCita :cita:idHistorial :cita:dtComplementosDisponibles"
+                                                           rendered="#{!gestionCitasView.verTodas}"
+                                                           disabled="#{item.atendida}"
+                                                           immediate="true"
+                                                           >
+                                                <p:resetInput target=":cita:panelAtenderCita" />
+                                            </p:commandLink>
+
+                                            <p:commandLink class="fa fa-edit action-link" title="#{msg.editarCita}"  
+                                                           process="@this"
+                                                           actionListener="#{gestionCitasView.modificarCitaPrev(item)}"
+                                                           oncomplete="PF('dlgAdd').show();"
+                                                           update=":cita:panelAddCita :cita:actionGestion"
+                                                           rendered="#{gestionCitasView.verTodas}"
+                                                           >
+                                                <p:resetInput target=":cita:panelAddCita" />
+                                            </p:commandLink>
+
+                                            <p:commandLink class="fa fa-trash-o action-link" title="#{msg.eliminarCita}" 
+                                                           process="@this"
+                                                           actionListener="#{gestionCitasView.eliminarCita(item)}"
+                                                           update=":cita:dtCitas :cita:growlCitas" 
+                                                           disabled="#{item.atendida}"
+                                                           >
+                                                <p:confirm header="#{msg.eliminarCita}" 
+                                                           message="¿#{msg.eliminacionCita} #{item.fecha} #{msg.eliminacionCitaContinuacion} #{item.modulo} ?" icon="ui-icon-alert" />
+                                            </p:commandLink>
+                                            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" closable="true" responsive="true">
+                                                <p:panelGrid layout="grid" columns="2" styleClass="text-center">
+                                                    <p:commandButton value="#{msg.si}" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                                    <p:commandButton value="#{msg.no}" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                                </p:panelGrid>
+                                            </p:confirmDialog>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:outputPanel>
+
+
+                                <!-- ////////////////////// DIÁLOGO SELECCIÓN DE HORA \\\\\\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:dialog header="#{msg.seleccionarHora}" class="dialog" id="dlgHoras" widgetVar="dlgHoras" 
+                                          resizable="false" modal="true" responsive="true" dynamic="true" 
+                                          closable="true" showEffect="fade" hideEffect="fade">
+
+                                    <p:scrollPanel mode="native" style="height: 32em;">
+
+                                        <p:outputPanel id="panelHoras" class="dialog__container">
+
+                                            <p:outputPanel class="dialog__box">
+
+                                                <p:panelGrid columns="2" layout="grid" columnClasses="ui-grid-col-6, ui-grid-col-6">
+                                                    <p:dataList value="#{gestionCitasView.listaTratamientosCompleta}" var="tratamiento" type="unordered">
+                                                        <p:panelGrid columns="2" layout="grid" columnClasses="ui-grid-col-2, ui-grid-col-10">
+                                                            <p:outputPanel style="background-color:#{tratamiento.color}; width: 20px; height: 20px;" />
+                                                            <h:outputText value="#{tratamiento.nombre}" />
+                                                        </p:panelGrid>
+                                                    </p:dataList>
+                                                    <p:outputPanel>
+                                                        <p:panelGrid columns="2" layout="grid" columnClasses="ui-grid-col-2, ui-grid-col-10">
+                                                            <p:outputPanel style="background: #DDDDDD; width: 20px; height: 20px;" />
+                                                            <h:outputText value="Indisponible"/>
+                                                            <p:outputPanel style="background: #98FB98; width: 20px; height: 20px;" />
+                                                            <h:outputText value="Disponible" />
+                                                        </p:panelGrid>
+                                                    </p:outputPanel>
+                                                </p:panelGrid>
+
+                                            </p:outputPanel>
+                                            <p:outputPanel class="dialog__box">
+                                                <p:panelGrid columns="2" columnClasses="ui-grid-col-6, ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank">
+
+                                                    <p:dataGrid  var="horaManana" value="#{gestionCitasView.mapHorarioManana}" columns="4" layout="grid"
+                                                                 rows="17" id="horaCitaManana" rowIndexVar="index">
+                                                        <f:facet name="header">
+                                                            #{msg.horarioManana}
+                                                        </f:facet>
+                                                        <p:commandLink class="panelHoras__link" actionListener="#{gestionCitasView.obtenerHora(horaManana.key)}" 
+                                                                       process="@this" update=":cita:horaCitaNueva" 
+                                                                       disabled="#{horaManana.value ne '#98FB98'}"
+                                                                       style="background:#{horaManana.value}; border-radius: 10px; text-decoration: none; cursor:grab;"
+                                                                       onclick="PF('dlgHoras').hide();">
+                                                            <h:outputText value="#{horaManana.key}" style="background-color: #{horaManana.value}; color: #FFFFFF;" />
+                                                        </p:commandLink>
+                                                    </p:dataGrid>
+
+                                                    <p:dataGrid  var="horaTarde" value="#{gestionCitasView.mapHorarioTarde}" columns="4" layout="grid"
+                                                                 rows="17" id="horaCitaTarde" rowIndexVar="index">
+                                                        <f:facet name="header">
+                                                            #{msg.horarioTarde}
+                                                        </f:facet>
+                                                        <p:commandLink class="panelHoras__link" actionListener="#{gestionCitasView.obtenerHora(horaTarde.key)}" 
+                                                                       process="@this" update=":cita:horaCitaNueva" 
+                                                                       disabled="#{horaTarde.value ne '#98FB98'}"
+                                                                       style="background:#{horaTarde.value}; border-radius: 10px; text-decoration: none; cursor:grab;"
+                                                                       onclick="PF('dlgHoras').hide();">
+                                                            <h:outputText value="#{horaTarde.key}" style="background-color: #{horaTarde.value}; color: #FFFFFF;" />
+                                                        </p:commandLink>
+                                                    </p:dataGrid>    
+
+                                                </p:panelGrid>
+                                            </p:outputPanel>
+                                        </p:outputPanel>
+
+                                    </p:scrollPanel>
+
+                                </p:dialog>
+
+                                <!-- //////////////////////////// DIÁLOGO DE ATENDER CITA \\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:dialog header="#{msg.atenderCita}" class="dialog" id="dlgAtenderCita" widgetVar="dlgAtender"
+                                          dynamic="true" closable="true" 
+                                          resizable="false" modal="true" responsive="true" showEffect="fade" hideEffect="fade">
+                                    <p:scrollPanel mode="native" style="height:26em;">
+                                        <p:outputPanel id = "panelAtenderCita" class="dialog__container">
+
+                                            <p:outputPanel class="dialog__box">
+
+                                                <p:panelGrid columns="3" columnClasses="ui-grid-col-10, ui-grid-col-1, ui-grid-col-1" layout="grid" styleClass="ui-panelgrid-blank">
+
+                                                    <p:outputPanel>
+                                                        <p:repeat value="#{gestionCitasView.listaPrueba}" var="cliente">
+                                                            <h:outputText value="#{cliente.nombre} " />
+                                                            <h:outputText value="#{cliente.apellidos}" />
+                                                        </p:repeat>
+                                                    </p:outputPanel>
+
+                                                    <p:commandLink id="idHistorial" class="fa fa-history action-link" title="#{msg.historial}"  
+                                                                   process="@this"
+                                                                   oncomplete="PF('dlgHistorial').show();"
+                                                                   update=":cita:panelHistorial"
+                                                                   disabled="#{empty gestionCitasView.listaHistorial or gestionCitasView.exito == true}"
+                                                                   />
+
+                                                    <p:commandLink id="pdf" class="fa fa-file-pdf-o" title="#{msg.descargarPDF}"  
+                                                                   process="@this"
+                                                                   actionListener="#{gestionCitasView.crearPDF()}"
+                                                                   disabled="#{!gestionCitasView.exito}"
+                                                                   />
+
+                                                </p:panelGrid>
+
+                                            </p:outputPanel>
+
+                                            <p:outputPanel class="dialog__box">
+                                                <p:panelGrid columns="4" columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
+
+                                                    <h:outputLabel for="lesionA" value="#{msg.lesion}" />                                                                                               
+                                                    <p:selectOneMenu id="lesionA" value="#{gestionCitasView.idLesionCita}" style="min-width: 10.8em;" 
+                                                                     disabled="#{gestionCitasView.exito == true or gestionCitasView.idLesionCita != 1}" required="true" requiredMessage="#{msg.reqLesion}">
+                                                        <f:selectItem itemLabel="Select One" itemValue="#{null}" />
+                                                        <f:selectItems value="#{gestionCitasView.listaNombresLesiones}" var="item" itemLabel="#{item.nombre}" itemValue="#{item.idLesion}" />
+
+                                                        <p:ajax event="change" listener="#{gestionCitasView.cargarComplementosLesion()}"
+                                                                update="@this :cita:dtComplementosDisponibles :cita:dtComplementosSeleccionados" />;
+                                                    </p:selectOneMenu>
+
+                                                    <h:outputLabel for="tratamientoA" value="#{msg.tratamiento}" />
+                                                    <p:inputText id="tratamientoA" value="#{gestionCitasView.nombreTratamiento}" disabled="true" />
+
+                                                    <h:outputLabel for="gradoLesionA" value="#{msg.grado}" />
+                                                    <p:selectOneMenu id="gradoLesionA" value="#{gestionCitasView.gradoLesion}" style="min-width: 10.8em;"
+                                                                     disabled="#{gestionCitasView.exito == true}" >           
+                                                        <f:selectItem itemLabel="Select One" itemValue="#{null}" />
+                                                        <f:selectItem itemLabel="1" itemValue="1" />
+                                                        <f:selectItem itemLabel="2" itemValue="2" />
+                                                        <f:selectItem itemLabel="3" itemValue="3" />
+                                                    </p:selectOneMenu>
+
+                                                    <h:outputLabel for="duracionTratamientoA" value="#{msg.duracionTratamiento}" />
+                                                    <p:inputText id="duracionTratamientoA" value="#{gestionCitasView.duracionTratamientoLesion}'" disabled="true" />
+
+                                                    <h:outputLabel for="estadoLesionA" value="#{msg.estado}" />
+                                                    <p:selectOneMenu id="estadoLesionA" value="#{gestionCitasView.estadoLesion}" style="min-width: 10.8em;"
+                                                                     disabled="#{gestionCitasView.exito == true}">           
+                                                        <f:selectItem itemLabel="Select One" itemValue="#{null}" />
+                                                        <f:selectItem itemLabel="#{msg.agudo}" itemValue="0" />
+                                                        <f:selectItem itemLabel="#{msg.cronico}" itemValue="1" />
+                                                    </p:selectOneMenu>
+
+                                                    <h:outputLabel for="precioTratamientoA" value="#{msg.precioTratamiento}" />
+                                                    <p:inputText id="precioTratamientoA" value="#{gestionCitasView.precioTratamientoLesion}€" disabled="true" />
+
+                                                    <h:outputLabel for="zonaA" value="#{msg.zona}" />
+                                                    <p:selectOneMenu id="zonaA" value="#{gestionCitasView.idZonaCita}" style="min-width: 10.8em;" 
+                                                                     disabled="#{gestionCitasView.exito == true}" required="true" requiredMessage="#{msg.reqZona}">           
+                                                        <f:selectItem itemLabel="Select One" itemValue="#{null}" />
+                                                        <f:selectItems value="#{gestionCitasView.listaZonas}" var="zona" 
+                                                                       itemLabel="#{zona.nombre}" itemValue="#{zona.idZona}" />
+
+                                                        <p:ajax event="change" update=":cita:musculoA" listener="#{gestionCitasView.cargarMusculosZona}" />
+                                                    </p:selectOneMenu>
+
+                                                    <h:outputLabel for="musculoA" value="#{msg.musculo}" />
+                                                    <p:selectOneMenu id="musculoA" value="#{gestionCitasView.idMusculoCita}" required="true" requiredMessage="#{msg.reqMusculo}" 
+                                                                     disabled="#{gestionCitasView.idZonaCita == 0 or gestionCitasView.exito == true}" style="min-width: 10.8em;" >           
+                                                        <f:selectItem itemLabel="Select One" itemValue="#{null}" />
+                                                        <f:selectItems  value="#{gestionCitasView.listaMusculos}" var="musculo" 
+                                                                        itemLabel="#{musculo.nombre}" itemValue="#{musculo.idMusculo}" />
+                                                    </p:selectOneMenu>
+
+                                                </p:panelGrid>
+
+
+                                                <p:panelGrid columns="1" columnClasses="ui-grid-col-12" layout="grid" styleClass="ui-panelgrid-blank">
+
+                                                    <h:outputLabel for="observaciones" value="#{msg.observaciones}" />
+                                                    <p:inputTextarea id="observaciones" value="#{gestionCitasView.observacionesCita}" 
+                                                                     rows="4" counter="dObservaciones" maxlength="200" 
+                                                                     counterTemplate="{0} #{msg.caracteresDisponibles}" 
+                                                                     disabled="#{gestionCitasView.exito == true}" />
+                                                    <h:outputText id="dObservaciones" class="dialog__span" />
+
+                                                </p:panelGrid>
+
+                                            </p:outputPanel>
+
+                                            <!-- //////////////////// PANEL DE AÑADIR COMPLEMENTO-CITA \\\\\\\\\\\\\\\\\\ -->
+                                            <p:outputPanel class="addPanel">
+                                                <p:commandLink id="addComplemento" class="fa fa-plus-square add-link" title="#{msg.anadirComplemento}" 
+                                                               process="@this"
+                                                               oncomplete="PF('dlgAddComplementoCita').show();" 
+                                                               disabled="#{gestionCitasView.exito == true}" />
+                                            </p:outputPanel>
+
+                                            <p:outputPanel class="dialog__box">
+
+                                                <!-- //////////////////// DATATABLE DE COMPLEMENTOS SELECCIONADOS \\\\\\\\\\\\\\\\\\ -->
+                                                <p:dataTable id="dtComplementosSeleccionados" class="datatable" value="#{gestionCitasView.listaComplementosSeleccionados}" var="item"
+                                                             paginator="true" rows="5" paginatorPosition="bottom"
+                                                             rowsPerPageTemplate="5,10,15" tableStyle="table-layout: auto;"
+                                                             emptyMessage="#{msg.noComplementos}" reflow="true">
+                                                    <f:facet name="header">
+                                                        #{msg.complementosSel}
+                                                    </f:facet>
+
+                                                    <p:column headerText="#{msg.nombreComplemento}" class="datatable__col">
+                                                        <h:outputText value="#{item.nombre}" />
+                                                    </p:column>
+
+                                                    <p:column headerText="#{msg.tipoComplemento}" class="datatable__col">
+                                                        <h:outputText value="#{item.tipo}" />
+                                                    </p:column>
+
+                                                    <p:column headerText="#{msg.descripcionComplemento}" class="datatable__col">
+                                                        <h:outputText value="#{item.descripcion}" />
+                                                    </p:column>
+
+                                                    <p:column class="datatable__col datatable__col--textCenter datatable__col--double-min">
+                                                        <p:commandLink class="fa fa-remove action-link" title="#{msg.borrarComplemento}" 
+                                                                       process="@this" actionListener="#{gestionCitasView.deleteCitaComplemento(item)}"
+                                                                       update=":cita:dtComplementosDisponibles :cita:dtComplementosSeleccionados" 
+                                                                       disabled="#{gestionCitasView.exito == true}" />
+                                                    </p:column>
+                                                </p:dataTable>
+
+
+                                            </p:outputPanel>
+
+                                            <p:outputPanel class="dialog__btn">
+                                                <!-- -->
+                                                <p:commandButton class="button" value="#{msg.guardar}" 
+                                                                 actionListener="#{gestionCitasView.atenderCita()}"  
+                                                                 process=":cita:dlgAtenderCita"
+                                                                 update=":cita:growlCitas :cita:panelAtenderCita :cita:pdf :cita:dtCitasPanel"
+                                                                 disabled="#{gestionCitasView.exito == true}"
+                                                                 />
+                                            </p:outputPanel>
+
+                                        </p:outputPanel>
+
+                                    </p:scrollPanel>
+                                </p:dialog>
+
+                                <!-- /////////////////////////////// DIÁLOGO DE HISTORIAL DE CITAS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:dialog header="#{msg.citasHistorial}" class="dialog" id="dlgHistorial" widgetVar="dlgHistorial"  closable="true" 
+                                          resizable="false" modal="true" responsive="true" showEffect="fade" hideEffect="fade" style="min-width: 80%;">
+
+                                    <p:scrollPanel mode="native"  style="height:30em;">
+
+                                        <p:outputPanel id="panelHistorial">
+
+                                            <p:repeat value="#{gestionCitasView.listaHistorial}" var="citaHistorial">
+
+                                                <p:panelGrid class="dialog__panelGrid" columns="2" columnClasses="ui-grid-col-4,ui-grid-col-8" layout="grid">
+
+                                                    <f:facet name="header">
+                                                        <h:outputText value="#{citaHistorial.fecha}" style="margin-right: 2em;" >
+                                                            <f:convertDateTime pattern = "dd/MM/yyyy" />
+                                                        </h:outputText>
+                                                        <h:outputText value="#{citaHistorial.modulo}" />
+                                                    </f:facet>
+
+                                                    <p:outputPanel style="text-align: center; vertical-align: middle;">
+                                                        <h:outputText class="dialog__text" value="#{citaHistorial.nombreMusculo}" style="display:block;" />
+                                                        <h:graphicImage class="dialog__image" name="#{citaHistorial.urlImagenMusculo}" style="border-radius: 12px;" /> 
+                                                    </p:outputPanel>
+
+                                                    <p:panelGrid columns="2" columnClasses="ui-grid-col-6, ui-grid-col-6" layout="grid">
+                                                        <h:outputText value="#{msg.lesion}" />
+                                                        <h:outputText value="#{citaHistorial.nombreLesion}" />
+
+                                                        <h:outputText value="#{msg.estado}" />
+                                                        <h:outputText value="#{citaHistorial.estado}" />
+
+                                                        <h:outputText value="#{msg.grado}" />
+                                                        <h:outputText value="#{citaHistorial.grado}" />
+
+                                                        <h:outputText value="#{msg.tratamiento}" />
+                                                        <h:outputText value="#{citaHistorial.nombreTratamiento}" />
+
+                                                        <h:outputText class="dialog__text" value="#{msg.observaciones}" />
+                                                        <h:outputText class="dialog__text" value="#{citaHistorial.observaciones}" />
+
+                                                    </p:panelGrid>
+
+                                                </p:panelGrid>
+
+                                            </p:repeat>
+
+                                        </p:outputPanel>
+
+                                    </p:scrollPanel>
+
+                                </p:dialog>
+
+                                <!-- //////////////// DIÁLOGO DE COMPLEMENTOS DISPONIBLES \\\\\\\\\\\\\\\\\\\\\\ -->
+                                <p:dialog header="#{msg.complementosDisp}" class="dialog" widgetVar="dlgAddComplementoCita" 
+                                          resizable="false" modal="true" responsive="true" dynamic="true" closable="true" showEffect="fade"
+                                          hideEffect="fade">
+
+                                    <!-- //////////////// DATATABLE DE COMPLEMENTOS DISPONIBLES \\\\\\\\\\\\\\\\\\\\\\ -->
+                                    <p:dataTable id="dtComplementosDisponibles" class="datatable" value="#{gestionCitasView.listaComplementosDisponibles}" var="item"
+                                                 paginator="true" rows="5" paginatorPosition="bottom" reflow="true"
+                                                 rowsPerPageTemplate="5,10,15" style="max-width: 40em;"
+                                                 emptyMessage="#{msg.noComplementos}" >
+
+                                        <f:facet name="header">
+                                            #{msg.complementosDisp}
+                                        </f:facet>
+
+                                        <p:column headerText="#{msg.nombreComplemento}" class="datatable__col">
+                                            <h:outputText value="#{item.nombre}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.tipoComplemento}" class="datatable__col" sortBy="#{item.tipo}">
+                                            <h:outputText value="#{item.tipo}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.descripcionComplemento}" class="datatable__col">
+                                            <h:outputText value="#{item.descripcion}" />
+                                        </p:column>
+
+                                        <p:column class="datatable__col datatable__col--textCenter datatable__col--double-min">
+                                            <p:commandLink class="fa fa-check action-link" title="#{msg.anadirComplemento}" 
+                                                           process="@this" actionListener="#{gestionCitasView.addCitaComplemento(item)}"
+                                                           update=":cita:dtComplementosSeleccionados :cita:dtComplementosDisponibles "
+                                                           disabled="#{gestionCitasView.exito == true}"
+                                                           />
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:dialog>
+
+                            </div>
+                        </h:form>
+                    </f:view>
+                </p:outputPanel>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
